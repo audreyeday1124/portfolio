@@ -1,0 +1,47 @@
+%% ENGG131_Exam2P1.m
+% Author: Audrey Day
+% Construct a stress variation from z=1' to z=10' in increments of 1', and
+% y=0' to y=5' in increments of 1'. Find oz at each location and construct
+% contour lines of oz = 2,5,10,15,20,30,40,50.
+
+%% clear workspace
+clear;
+clc;
+close all;
+
+%% parameters
+a = 2;                  %ft
+p = -100;               %lb/ft2
+stress = zeros(10,6);
+conline = [2,5,10,15,20,30,40,50,60,70,80];
+
+%% calculations
+% z stress evaluation
+
+for z = 1:10
+    for y = 0:5
+
+        stress(z,y+1) = (p/pi)*((2*a*z*(y^2-z^2-a^2))/((z^2+(y-a)^2)...
+            *(z^2+(y+a)^2))+atan((y-a)/z)-atan((y+a)/z));
+    end
+end
+
+%% display results
+Z = flip(stress);
+disp('')
+disp('')
+disp('')
+disp('Stress Distribution (psf):')
+disp(num2str(stress))
+disp('')
+disp('')
+[C,h] = contour(Z,conline,linewidth=3);
+hold on
+clabel(C,h)
+xticks([0,1,2,3,4,5,6])
+xticklabels({'0','0','1', '2', '3', '4', '5'})
+yticklabels({'10', '9', '8', '7', '6','5', '4', '3', '2', '1'})
+xlabel("y (ft)")
+ylabel("z (ft)")
+title("Stress Contour of a Distributed Load on a Semi-Infinite Solid")
+fontsize(15,"points")
