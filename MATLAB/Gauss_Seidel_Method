@@ -1,0 +1,84 @@
+%% Gauss-Seidel_Method.m
+% Author: Audrey Day
+%
+%% clear workspace
+clear;
+close all;
+clc;
+
+% Coefficients matrix A
+A = [1 0 0 0 0 0 0 0 0 0 0; ...
+     0 -8.840 4.418 0 0 0 0 0 0 0 0; ...
+     0 4.418 -8.840 4.418 0 0 0 0 0 0 0; ...
+     0 0 4.418 -8.840 4.418 0 0 0 0 0 0; ...
+     0 0 0 4.418 -8.840 4.418 0 0 0 0 0; ...
+     0 0 0 0 4.418 -8.840 4.418 0 0 0 0; ...
+     0 0 0 0 0 4.418 -8.840 4.418 0 0 0; ...
+     0 0 0 0 0 0 4.418 -8.840 4.418 0 0; ...
+     0 0 0 0 0 0 0 4.418 -8.840 4.418 0; ...
+     0 0 0 0 0 0 0 0 4.418 -8.840 4.418; ...
+     0 0 0 0 0 0 0 0 0 4.418 -4.4217];
+
+% Constants vector B
+B =  [200; ...
+     -883.66; ...
+     -0.06362; ...
+     -0.06362; ...
+     -0.06362; ...
+     -0.06362; ...
+     -0.06362; ...
+     -0.06362; ...
+     -0.06362; ...
+     -0.06362; ...T
+     -0.05567];
+
+% Initial Approximation
+T0 = zeros(size(B));
+Tend = numel(B);
+
+% Tolerance
+e = 1e-3;
+
+% Gauss-Seidel Iterative Method
+T = T0;
+iter = 0;
+
+%% Calculations
+while true
+    iter = iter + 1;
+    T_old = T;
+    
+    % Equation 1, 2
+    T(1) = B(1,1);
+    T(2) = (B(2,1)-A(2,3)*T(3,1))/A(2,2);
+    % Equation 3-10
+    for i=3:Tend-1
+        sumA = 0;
+        for n=1:Tend
+            sumA = sumA + A(i,n)*T(n);
+        end
+        sumA = sumA-A(i,i)*T(i,1);
+    T(i) = (B(i,1)-sumA)/A(i,i);
+    end
+    
+    % Equation 11
+   T(11) = (B(Tend)-A(11,10)*T(10))/A(11,11);
+   
+    % Check for convergence
+    if max(abs(T - T_old)) < e
+        break;
+    end
+    
+    % Terminate if the maximum number of iterations is reached
+    if iter > 300
+        disp('Maximum number of iterations reached without convergence.');
+        break;
+    end
+end
+C = A\B;
+disp(['Solution converged in ', num2str(iter), ' iterations.']);
+disp(num2str(T))
+disp(' ')
+disp(num2str(C))
+% -----------------------------
+
