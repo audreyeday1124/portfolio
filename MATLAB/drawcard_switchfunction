@@ -1,0 +1,43 @@
+%% drawCard.m
+% Author: Audrey Day
+% randomly selects one of the 52 cards
+
+%% clear workspace
+clear;
+clc;
+
+%% parameters
+
+cardNum = randi(13);
+cardSuit = randi(4);
+            
+%% calculations
+switch cardNum
+    case 1
+        cardNum = 'Ace';
+    case 11
+        cardNum = 'Jack';
+    case 12
+        cardNum = 'Queen';
+    case 13
+        cardNum = 'King';
+    otherwise 
+        cardNum = num2str(cardNum);
+end
+
+switch cardSuit
+    case 1
+        cardSuit = 'Hearts';
+    case 2
+        cardSuit = 'Diamonds';
+    case 3
+        cardSuit = 'Spades';
+    case 4
+        cardSuit = 'Clubs';
+end
+
+
+%% display results
+disp(' ')
+disp([cardNum, ' of ', cardSuit])
+disp(' ')
