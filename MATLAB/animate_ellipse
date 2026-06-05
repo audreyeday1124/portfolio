@@ -1,0 +1,43 @@
+%% animateEllipse.m
+% Author: Audrey Day
+% show ellipse as it is being drawn
+
+%% clear workspace
+clear;
+clc;
+
+%% parameters
+b = 1.25;        
+T = 1;               %Period
+Np = 4;              %number of periods
+Nt = 500;
+Nstride = 2;         %speeds up plotting
+phi = pi/8;          %relative phase shift
+
+            
+%% initialize arrays
+
+Tf = Np * T;         % final time value
+omega = 2*pi/T;      % omega from period
+t = linspace(0,Tf,Nt);
+x = zeros(1,Nt);
+y = zeros(1,Nt);
+
+
+%% calculate motion
+
+for it = 1:Nt
+    x(it)=b*cos(omega*t(it)-phi);
+    y(it)=b*sin(omega*t(it)+phi);
+end
+
+
+%% plot animation
+
+for it = 1:Nstride:Nt
+    plot(x(1:it), y(1:it), x(it), y(it), 'mo', [0,x(it)],[0,y(it)],'m');
+    %    [    ellipse   ] [      circle     ]  [        line          ]
+    axis([-1.5,1.5,-1.5,1.5]);
+    title('Elliptical Animation')
+    drawnow
+end
