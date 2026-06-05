@@ -1,0 +1,29 @@
+%% Low_Pass.m
+% Author: Audrey Day
+% Model a low-pass filter output signal
+
+%% clear workspace
+clear;
+clc;
+
+%% parameters
+
+Tau = 0.052;
+x = tf(1, [Tau 1]);
+
+Sw = 1*2*pi;       %Hz
+SA = (0.2/2)*0.95;   %Vpp
+Nw = 60*2*pi;
+NA = (0.1/2)*0.05;
+window = 3.5;
+t = linspace(0, window, 1000);
+
+Signal = SA*sin(Sw*t+87)+NA*sin(Nw*t+18);
+
+
+            
+%% calculations
+
+bode(x)
+plot(t, Signal)
+ylim([-0.15,0.15])
