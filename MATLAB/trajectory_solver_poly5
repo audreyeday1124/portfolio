@@ -1,0 +1,139 @@
+%% TrajectorySolver.m
+% Author: Audrey Day
+% find the fifth-order polynomial motion profile that satisfies the
+% boundary conditions.
+
+%% clear workspace
+clear;
+clc;
+close all;
+
+%% parameters
+% Move 1 ------------------------------------------------------------------
+
+T1i_M1 = 0;      % motor 1 initial and final position (degrees)
+T1f_M1 = deg2rad(118-135);
+
+T4i_M1 = 0;       % motor 2 initial and final position (degrees)
+T4f_M1 = deg2rad(62-107);
+
+t_M1 = 1.5;          % time
+
+% Move 2 ------------------------------------------------------------------
+
+T1i_M2 = 0;   % motor 1 initial and final position (degrees)
+T1f_M2 = deg2rad(135-60);
+
+T4i_M2 = 0;   % motor 2 initial and final position (degrees)
+T4f_M2 = deg2rad(107-40);
+
+t_M2 = 3;          % time
+
+% Move 3 ------------------------------------------------------------------
+
+T1i_M3 = 0;   % motor 1 initial and final position (degrees)
+T1f_M3 = deg2rad(60-118);
+
+T4i_M3 = 0;   % motor 2 initial and final position (degrees)
+T4f_M3 = deg2rad(40-62);
+
+t_M3 = 1.5;          % time
+
+%% solver function
+function coeffs = quinticTrajectory(theta_start, theta_end, T)
+% quinticTrajectory
+% Solves for coefficients of a 5th-order polynomial trajectory
+%
+% Inputs:
+%   theta_start - initial position
+%   theta_end   - final position
+%   T           - total time
+%
+% Output:
+%   coeffs = [a b c d e f]
+
+    syms a b c d e f t
+
+    % polynomial
+    theta = a + b*t + c*t^2 + d*t^3 + e*t^4 + f*t^5;
+
+    % derivatives
+    dtheta = diff(theta, t);
+    ddtheta = diff(dtheta, t);
+
+    % boundary conditions
+    eqns = [
+        subs(theta, t, 0) == theta_start;
+        subs(theta, t, T) == theta_end;
+        subs(dtheta, t, 0) == 0;
+        subs(dtheta, t, T) == 0;
+        subs(ddtheta, t, 0) == 0;
+        subs(ddtheta, t, T) == 0;
+    ];
+
+    % solve
+    sol = solve(eqns, [a b c d e f]);
+
+    % return as row vector
+    coeffs = double([sol.a, sol.b, sol.c, sol.d, sol.e, sol.f]);
+end
+
+%% calculations
+
+% -------- Move 1 --------
+coeffs_M1_motor1 = quinticTrajectory(T1i_M1, T1f_M1, t_M1);
+coeffs_M1_motor2 = quinticTrajectory(T4i_M1, T4f_M1, t_M1);
+
+% -------- Move 2 --------
+coeffs_M2_motor1 = quinticTrajectory(T1i_M2, T1f_M2, t_M2);
+coeffs_M2_motor2 = quinticTrajectory(T4i_M2, T4f_M2, t_M2);
+
+% -------- Move 3 --------
+coeffs_M3_motor1 = quinticTrajectory(T1i_M3, T1f_M3, t_M3);
+coeffs_M3_motor2 = quinticTrajectory(T4i_M3, T4f_M3, t_M3);
+
+%% display results
+
+function eqnStr = formatEquation(coeffs, name)
+% formatEquation
+% Converts coefficient vector into readable polynomial string
+
+    terms = {'', 'x', 'x^2', 'x^3', 'x^4', 'x^5'};
+    eqnStr = sprintf('%s(x) = ', name);
+
+    for i = 1:length(coeffs)
+        c = coeffs(i);
+
+        if abs(c) < 1e-10
+            continue; % skip zero terms
+        end
+
+        if c >= 0 && i > 1
+            eqnStr = [eqnStr, ' + '];
+        elseif c < 0
+            eqnStr = [eqnStr, ' - '];
+            c = abs(c);
+        end
+
+        if i == 1
+            eqnStr = [eqnStr, sprintf('%.4f', c)];
+        else
+            eqnStr = [eqnStr, sprintf('%.4f%s', c, terms{i})];
+        end
+    end
+end
+
+disp('--- Move 1 ---')
+disp(formatEquation(coeffs_M1_motor1, 'Theta1'));
+disp(formatEquation(coeffs_M1_motor2, 'Theta4'));
+disp(' ')
+
+disp('--- Move 2 ---')
+disp(formatEquation(coeffs_M2_motor1, 'Theta1'));
+disp(formatEquation(coeffs_M2_motor2, 'Theta4'));
+disp(' ')
+
+disp('--- Move 3 ---')
+disp(formatEquation(coeffs_M3_motor1, 'Theta1'));
+disp(formatEquation(coeffs_M3_motor2, 'Theta4'));
+disp(' ')
