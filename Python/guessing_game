@@ -1,0 +1,19 @@
+import random
+
+score = 0
+randomNum = random.randint(1,100)
+
+while True: 
+    userNumberInput = int(input('Guess : '))
+
+    if userNumberInput == randomNum:
+        print("Congratulations, you got it right! You guessed " + str(score) + " times.")
+        break
+
+    if userNumberInput > randomNum:
+        print("Too high!")
+        score += 1
+
+    if userNumberInput < randomNum:
+        print("Too low!")
+        score += 1
